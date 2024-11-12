@@ -3,6 +3,7 @@
 *.classpath
 *.project
 *.uuid
+*.prefs
 
 # Log file
 *.log
