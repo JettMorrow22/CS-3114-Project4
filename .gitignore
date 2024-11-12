@@ -1,9 +1,6 @@
 # Compiled class file
 *.class
-*.classpath
-*.project
-*.uuid
-*.prefs
+
 
 # Log file
 *.log
