@@ -95,9 +95,10 @@ public class CommandProcessor {
                 
                 id = oneLine.nextInt();
                 controller.delete(id, output);
-
                 break;
             case "search":
+                id = oneLine.nextInt();
+                controller.search(id, output);
 
                 break;
             case "print":
