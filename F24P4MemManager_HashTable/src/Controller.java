@@ -42,4 +42,22 @@ public class Controller {
     public void delete(int id, PrintWriter output) {
         
     }
+ 
+    public void print(HashTable hashTable, PrintWriter output)
+    {
+        int count = 0;
+        String[] arr = hashTable.print();
+        
+        output.println("Hashtable:");
+        for (i = 0; i < arr.length; i++)
+        {
+            if (arr[i] == null)
+            {
+                continue;
+            }
+            output.println(arr[i]);
+            count++;
+        }
+        output.println("total records: " + count);
+    }
 }
