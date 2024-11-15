@@ -38,12 +38,13 @@ import java.util.Scanner;
 
 public class SemManager {
     /**
-     * mainnn class 
+     * mainnn class
      *
      * @param args
      *            Command line parameters
+     * @throws Exception
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         if (args == null) {
             return;
         }

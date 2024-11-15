@@ -15,7 +15,7 @@ public class HandleTest extends TestCase
      */
     public void setUp()
     {
-        handle = new Handle(0, 5)
+        handle = new Handle(0, 5);
     }
     //~Public  Methods ........................................................
     /**

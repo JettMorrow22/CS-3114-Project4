@@ -126,7 +126,7 @@ public class HashTable {
                 int index = home;
                 int i = 1;
                 while (newRecords[index] != null) {
-                    index = (home + i * i) % (tableCap * 2);
+                    index = (home + probe(i)) % (tableCap * 2);
                     i++;
                 }
 
@@ -177,7 +177,7 @@ public class HashTable {
      * 
      * @return String[] to represent each record
      */
-    public String[] print() {
+    public String[] printRecords() {
         // account for tombstones
         String[] res = new String[tableCap];
 
@@ -191,7 +191,7 @@ public class HashTable {
                 line += x + ": TOMBSTONE";
             }
             else {
-                line += x + ": |" + records[x].getKey() + "|";
+                line += x + ": " + records[x].getKey();
             }
             res[x] = line;
         }

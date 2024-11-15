@@ -11,13 +11,9 @@ public class HashTableTest extends TestCase {
     private HashTable hashTable;
     private Record zero;
     private Record one;
-    private Record two;
-    private Record three;
-    private Record four;
     private Record five;
     private Record six;
     private Record seven;
-    private Record eight;
     private Record nine;
 
     /**
@@ -27,13 +23,9 @@ public class HashTableTest extends TestCase {
         hashTable = new HashTable(10);
         zero = new Record(0, null);
         one = new Record(1, null);
-        two = new Record(2, null);
-        three = new Record(3, null);
-        four = new Record(4, null);
         five = new Record(5, null);
         six = new Record(6, null);
         seven = new Record(7, null);
-        eight = new Record(8, null);
         nine = new Record(9, null);
     }
 
@@ -104,20 +96,17 @@ public class HashTableTest extends TestCase {
      *             exception
      */
     public void testFind() throws Exception {
-        hashTable.insert(new Record("Jett Morrow", null)); // should be index 0
-        hashTable.insert(new Record("Adam", null)); // should be index 1
-        hashTable.insert(new Record("Adamasa", null)); // should be index 0, so
-                                                       // prob to 1, then
-        // prob to 5
+        hashTable.insert(zero); //should be index 0
+        hashTable.insert(one); // should be index 1
+        hashTable.insert(new Record(10, null)); // prob to 3
 
         // in table
-        assertTrue(hashTable.find("Jett Morrow").getKey().equals(
-            "Jett Morrow"));
-        assertTrue(hashTable.find("Adam").getKey().equals("Adam"));
-        assertTrue(hashTable.find("Adamasa").getKey().equals("Adamasa"));
+        assertEquals(0, hashTable.find(0).getKey());
+        assertEquals(1, hashTable.find(1).getKey());
+        assertEquals(10, hashTable.find(10).getKey());
 
         // not in table
-        assertNull(hashTable.find("JENNA"));
+        assertNull(hashTable.find(1000));
     }
 
 
@@ -125,14 +114,13 @@ public class HashTableTest extends TestCase {
      * test method to double check probing in find
      */
     public void testExtraFind() {
-        hashTable.insert(new Record("Jett Morrow", null)); // should be index 0
-        hashTable.insert(new Record("Adam", null)); // should be index 1
-        hashTable.insert(new Record("Adamasa", null)); // should be index 0, so
+        hashTable.insert(zero); // should be index 0
+        hashTable.insert(one); // should be index 1
+        hashTable.insert(new Record(10, null)); // should be index 0, so
                                                        // prob to 1, then 4
-        hashTable.insert(new Record("fasdffdsateyu", null)); // 0, 1, 4, 9
+        hashTable.insert(new Record(100, null)); // 0, 1, 3, 6
 
-        assertTrue(hashTable.find("fasdffdsateyu").getKey().equals(
-            "fasdffdsateyu"));
+        assertEquals(100, hashTable.find(100).getKey());
 
     }
 
@@ -144,28 +132,26 @@ public class HashTableTest extends TestCase {
      *             exception
      */
     public void testCheckAndResize() throws Exception {
-        hashTable.insert(new Record("Jett Morrow", null)); // should be index 0
-        hashTable.insert(new Record("Adam", null)); // should be index 1
-        hashTable.insert(new Record("Adamasa", null)); // should be index 0, so
-                                                       // prob to 1, then
-        // prob to 5
+        hashTable.insert(zero); // should be index 0
+        hashTable.insert(one); // should be index 1
+        hashTable.insert(new Record(10, null)); // 0 , 1, 3
 
         assertFalse(hashTable.checkAndResize());
-        hashTable.insert(new Record("Jenna", null)); // should be index 7
+        hashTable.insert(seven); // should be index 7
         assertEquals(4, hashTable.getTableSize());
         assertEquals(10, hashTable.getTableCap());
 
         // if we were to add one more it would have to double in size
-        hashTable.insert(new Record("Kant", null));
-        hashTable.checkAndResize();
+        hashTable.insert(five);
+        assertTrue(hashTable.checkAndResize());
         assertEquals(20, hashTable.getTableCap());
         assertEquals(5, hashTable.getTableSize());
         // check if everything got rehashed correclty
-        assertTrue(hashTable.getRecords()[0].getKey().equals("Jett Morrow"));
-        assertTrue(hashTable.getRecords()[1].getKey().equals("Adam"));
-        assertTrue(hashTable.getRecords()[10].getKey().equals("Adamasa"));
-        assertTrue(hashTable.getRecords()[7].getKey().equals("Jenna"));
-        assertTrue(hashTable.getRecords()[3].getKey().equals("Kant"));
+        assertEquals(0, hashTable.getRecords()[0].getKey());
+        assertEquals(1, hashTable.getRecords()[1].getKey());
+        assertEquals(10, hashTable.getRecords()[10].getKey());
+        assertEquals(7, hashTable.getRecords()[7].getKey());
+        assertEquals(5, hashTable.getRecords()[5].getKey());
     }
 
 
@@ -176,39 +162,34 @@ public class HashTableTest extends TestCase {
      *             exception
      */
     public void testCheckAndResizeTombstones() throws Exception {
-        hashTable.insert(new Record("Jett Morrow", null)); // should be index 0
-        hashTable.insert(new Record("Adam", null)); // should be index 1
-        hashTable.insert(new Record("Adamasa", null)); // home = 0, index 4
+        hashTable.insert(zero); // should be index 0
+        hashTable.insert(one); // should be index 1
+        hashTable.insert(new Record(10, null)); // home = 0, index 3
 
         // add some tombstones
-        hashTable.insert(new Record("JENNA", null));
-        hashTable.remove("JENNA"); // TOMBSTONE @ 9
+        hashTable.insert(six);
+        hashTable.remove(6); // TOMBSTONE @ 6
 
         // add records that will have to probe when rehashed
-        hashTable.insert(new Record("Jettt wasd", null)); // home 1, prob 2
-        hashTable.remove("Jettt wasd"); // TOMBSTONE @ 2
+        hashTable.insert(new Record(11, null)); // home 1, prob 2
+        hashTable.remove(11); // TOMBSTONE @ 2
 
-        hashTable.insert(new Record("JENNA KANTOWSKI", null)); // home 0, prob
-                                                               // 1, prob 4,
-                                                               // prob 9
-        // add 9
-        // if we added another it would be >= 50% so resize?
+        hashTable.insert(new Record(100, null)); // home 0, 1,3,6
+        
         assertFalse(hashTable.checkAndResize());
-        assertTrue(hashTable.getRecords()[0].getKey().equals("Jett Morrow"));
-        assertTrue(hashTable.getRecords()[1].getKey().equals("Adam"));
-        assertTrue(hashTable.getRecords()[4].getKey().equals("Adamasa"));
-        assertTrue(hashTable.getRecords()[9].getKey().equals(
-            "JENNA KANTOWSKI"));
+        assertEquals(0, hashTable.getRecords()[0].getKey());
+        assertEquals(1, hashTable.getRecords()[1].getKey());
+        assertEquals(10, hashTable.getRecords()[3].getKey());
+        assertEquals(100, hashTable.getRecords()[6].getKey());
 
         // check resizing with tombstones
-        hashTable.insert(new Record("Hello", null)); // index 5
-        hashTable.checkAndResize();
-        assertTrue(hashTable.getRecords()[0].getKey().equals("Jett Morrow"));
-        assertTrue(hashTable.getRecords()[1].getKey().equals("Adam"));
-        assertTrue(hashTable.getRecords()[10].getKey().equals("Adamasa"));
-        assertTrue(hashTable.getRecords()[4].getKey().equals(
-            "JENNA KANTOWSKI"));
-        assertTrue(hashTable.getRecords()[15].getKey().equals("Hello"));
+        hashTable.insert(five); // index 5
+        assertTrue(hashTable.checkAndResize());
+        assertEquals(0, hashTable.getRecords()[0].getKey());
+        assertEquals(1, hashTable.getRecords()[1].getKey());
+        assertEquals(5, hashTable.getRecords()[5].getKey());
+        assertEquals(10, hashTable.getRecords()[10].getKey());
+        assertEquals(100, hashTable.getRecords()[3].getKey());
     }
 
 
@@ -219,27 +200,24 @@ public class HashTableTest extends TestCase {
      *             exception
      */
     public void testRemove() throws Exception {
-        hashTable.insert(new Record("Jett Morrow", null)); // should be index 0
-        hashTable.insert(new Record("Adam", null)); // should be index 1
-        hashTable.insert(new Record("Adamasa", null)); // should be index 0, so
-                                                       // prob to 1, then to
-        // 4
+        hashTable.insert(zero); // should be index 0
+        hashTable.insert(one); // should be index 1
+        hashTable.insert(new Record(10, null)); // 0, 1, 3
         // remove home index, now tombstone at 1
-        assertNotNull(hashTable.remove("Adam"));
-        assertTrue(hashTable.getRecords()[1].getKey().equals("TOMBSTONE"));
+        assertNotNull(hashTable.remove(1));
+        assertEquals(-1, hashTable.getRecords()[1].getKey());
         assertEquals(2, hashTable.getTableSize());
 
         // remove something that is a tombstone now
-        assertNull(hashTable.remove("Adam"));
+        assertNull(hashTable.remove(1));
 
         // remove key that DNE
-        assertNull(hashTable.remove("DNE"));
+        assertNull(hashTable.remove(1000));
         assertEquals(2, hashTable.getTableSize());
 
         // remove Adamasa, tries 0 not it, prob 1 tombstone, checks 4 removes it
-        assertNotNull(hashTable.remove("Adamasa"));
+        assertNotNull(hashTable.remove(10));
         assertEquals(1, hashTable.getTableSize());
-
     }
 
 
@@ -250,11 +228,9 @@ public class HashTableTest extends TestCase {
      *             exception
      */
     public void testGetRecords() throws Exception {
-        hashTable.insert(new Record("Jett Morrow", null)); // should be index 0
-        hashTable.insert(new Record("Adam", null)); // should be index 1
-        hashTable.insert(new Record("Adamasa", null)); // should be index 0, so
-                                                       // prob to 1, then
-        // prob to 5
+        hashTable.insert(zero); // should be index 0
+        hashTable.insert(one); // should be index 1
+        hashTable.insert(new Record(10, null)); // 0,1,3
         assertEquals(10, hashTable.getRecords().length);
     }
 
@@ -277,11 +253,9 @@ public class HashTableTest extends TestCase {
      *             exception
      */
     public void testGetTableSize() throws Exception {
-        hashTable.insert(new Record("Jett Morrow", null)); // should be index 0
-        hashTable.insert(new Record("Adam", null)); // should be index 1
-        hashTable.insert(new Record("Adamasa", null)); // should be index 0, so
-                                                       // prob to 1, then
-        // prob to 5
+        hashTable.insert(zero); // should be index 0
+        hashTable.insert(one); // should be index 1
+        hashTable.insert(new Record(10, null)); // 0,1,3
 
         assertEquals(3, hashTable.getTableSize());
     }
@@ -294,22 +268,20 @@ public class HashTableTest extends TestCase {
      *             exception
      */
     public void testPrint() throws Exception {
-        // check it returns valid strings
-        hashTable.insert(new Record("Jett Morrow", null)); // should be index 0
-        hashTable.insert(new Record("Adam", null)); // should be index 1
-        hashTable.insert(new Record("Adamasa", null)); // should be index 0, so
-                                                       // prob to 1, then
-        // prob to 4
-        hashTable.remove("Adam");
+        hashTable.insert(zero); // should be index 0
+        hashTable.insert(one); // should be index 1
+        hashTable.insert(new Record(10, null)); // 0,1,3
+        
+        hashTable.remove(1);
 
-        String one = "0: |Jett Morrow|";
+        String one = "0: 0";
         String two = "1: TOMBSTONE";
-        String three = "4: |Adamasa|";
+        String three = "3: 10";
 
-        String[] res = hashTable.print();
+        String[] res = hashTable.printRecords();
         assertTrue(one.equals(res[0]));
         assertTrue(two.equals(res[1]));
-        assertTrue(three.equals(res[4]));
+        assertTrue(three.equals(res[3]));
 
     }
 
@@ -321,14 +293,10 @@ public class HashTableTest extends TestCase {
      *             either a IOException or FileNotFoundException
      */
     public void testSfold() throws Exception {
-        assertTrue(Hash.h("a", 10000) == 97);
-        assertTrue(Hash.h("b", 10000) == 98);
-        assertTrue(Hash.h("aaaa", 10000) == 1873);
-        assertTrue(Hash.h("aaab", 10000) == 9089);
-        assertTrue(Hash.h("baaa", 10000) == 1874);
-        assertTrue(Hash.h("aaaaaaa", 10000) == 3794);
-        assertTrue(Hash.h("Long Lonesome Blues", 10000) == 4635);
-        assertTrue(Hash.h("Long   Lonesome Blues", 10000) == 4159);
-        assertTrue(Hash.h("long Lonesome Blues", 10000) == 4667);
+        assertEquals(1, hashTable.hash(11, 10));
+        assertEquals(4, hashTable.hash(4, 10));
+        assertEquals(11, hashTable.hash(11, 20));
+        assertEquals(1, hashTable.hash(21, 20));
+        assertEquals(8, hashTable.hash(28, 20));
     }
 }

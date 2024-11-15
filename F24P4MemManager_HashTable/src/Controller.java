@@ -11,12 +11,19 @@ public class Controller {
     private HashTable hashTable;
     // private memoryPool
     //
+    
+    /**
+     * Contructor for Controllre
+     * @param memorySize size of memoryPool
+     * @param hashTableSize size of HashTable
+     */
     public Controller(int memorySize, int hashTableSize) {
         hashTable = new HashTable(hashTableSize);
     }
 
 
-    public void insert(int id, Seminar seminar, PrintWriter output) {
+    public void insert(int id, Seminar seminar, PrintWriter output)
+        throws Exception {
 
         // the id already exists in the hash
         if (hashTable.find(id) != null) {
@@ -37,6 +44,7 @@ public class Controller {
         hashTable.insert(new Record(id, handle));
         output.println("Successfully inserted record with ID " + id);
         output.println(seminar.toString());
+        output.println("Size: " + seminar.serialize().length);
     }
 
 
@@ -72,19 +80,19 @@ public class Controller {
         }
     }
  
-    public void print(HashTable hashTable, PrintWriter output)
+    /**
+     * Prints out record ids and tombstones in the hashTable
+     * @param output PrintWriter obj
+     */
+    public void printHashTable(PrintWriter output)
     {
-        int count = 0;
-        String[] arr = hashTable.print();
-        
+        int count = 0;        
         output.println("Hashtable:");
-        for (int i = 0; i < arr.length; i++)
-        {
-            if (arr[i] == null)
-            {
+        for (String s : hashTable.printRecords()) {
+            if (s == null) {
                 continue;
             }
-            output.println(arr[i]);
+            output.println(s);
             count++;
         }
         output.println("total records: " + count);

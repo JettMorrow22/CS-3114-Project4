@@ -28,10 +28,11 @@ public class CommandProcessor {
      *            the scanner
      * @param output
      *            the output
+     * @throws Exception
      */
-    public void interpretAllLines(Scanner input, PrintWriter output) {
+    public void interpretAllLines(Scanner input, PrintWriter output) throws Exception {
         while (input.hasNext()) {
-            this.interpretLine(input, output, input);
+            this.interpretLine(input, output);
         }
         output.close();
     }
@@ -49,41 +50,44 @@ public class CommandProcessor {
      *            our output function
      * @param remainingInputLines
      *            the remainder of the input file
+     * @throws Exception 
      */
     public void interpretLine(
-        Scanner oneLine,
-        PrintWriter output,
-        Scanner remainingInputLines) {
+        Scanner curLine,
+        PrintWriter output) throws Exception {
 
         // we first have to process the first word (insert, remove, print)
         // depending on first word they have dif following input
         // insert, delete, search, print
-        String command = oneLine.next().trim();
+        String command = curLine.next().trim();
         int id;
         switch (command) {
             case "insert":
-                id = oneLine.nextInt();
-                oneLine.nextLine(); // this is to get to the next line
-                String title = oneLine.nextLine().trim();
-                String dateTime = oneLine.next().trim();
-                int length = oneLine.nextInt();
-                int x = oneLine.nextInt();
-                int y = oneLine.nextInt();
-                int cost = oneLine.nextInt();
-                oneLine.nextLine(); // go to next line
+                id = curLine.nextInt();
+                curLine.nextLine(); // this is to get to the next line
+                String title = curLine.nextLine().trim();
+                String dateTime = curLine.next().trim();
+                int length = curLine.nextInt();
+                int x = curLine.nextInt();
+                int y = curLine.nextInt();
+                int cost = curLine.nextInt();
+                curLine.nextLine(); // go to next line
 
-                Scanner keywordScanner = new Scanner(oneLine.nextLine());
+                Scanner keywordScanner = new Scanner(curLine.nextLine());
                 ArrayList<String> keywordList = new ArrayList<>();
                 while (keywordScanner.hasNext()) {
                     keywordList.add(keywordScanner.next().trim());
                 }
-
+                keywordScanner.close();
+                
+                Scanner descriptionScanner = new Scanner(curLine.nextLine());
                 StringBuilder sb = new StringBuilder();
-                while (oneLine.hasNext()) {
-                    sb.append(oneLine.next()).append(" ");
+                while (descriptionScanner.hasNext()) {
+                    sb.append(descriptionScanner.next()).append(" ");
                 }
                 sb.deleteCharAt(sb.length() - 1);
                 String description = new String(sb);
+                descriptionScanner.close();
 
                 Seminar seminar = new Seminar(id, title, dateTime, length,
                     (short)x, (short)y, cost, keywordList.toArray(
@@ -92,16 +96,25 @@ public class CommandProcessor {
 
                 break;
             case "delete":
-                
-                id = oneLine.nextInt();
+
+                id = curLine.nextInt();
                 controller.delete(id, output);
                 break;
             case "search":
-                id = oneLine.nextInt();
+                id = curLine.nextInt();
                 controller.search(id, output);
 
                 break;
             case "print":
+                String table = curLine.next();
+                switch (table) {
+                    case "hashtable":
+                        controller.printHashTable(output);
+                        break;
+
+                    case "blocks":
+                        break;
+                }
 
                 break;
         }

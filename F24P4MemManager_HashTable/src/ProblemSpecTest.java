@@ -33,8 +33,10 @@ public class ProblemSpecTest extends TestCase {
 
     /**
      * This method is simply to get coverage of the class declaration.
+     * 
+     * @throws Exception
      */
-    public void testMInitx() {
+    public void testMInitx() throws Exception {
         SemManager sem = new SemManager();
         assertNotNull(sem);
         SemManager.main(null);
@@ -43,10 +45,9 @@ public class ProblemSpecTest extends TestCase {
 
     /**
      * Full parser test
-     * 
-     * @throws IOException
+     * @throws Exception 
      */
-    public void testparserfull() throws IOException {
+    public void testparserfull() throws Exception {
         String[] args = new String[3];
         args[0] = "512";
         args[1] = "4";
@@ -62,9 +63,9 @@ public class ProblemSpecTest extends TestCase {
     /**
      * Simple parser test (input only)
      * 
-     * @throws IOException
+     * @throws Exception
      */
-    public void testparserinput() throws IOException {
+    public void testparserinput() throws Exception {
         String[] args = new String[3];
         args[0] = "2048";
         args[1] = "16";
@@ -73,6 +74,6 @@ public class ProblemSpecTest extends TestCase {
         SemManager.main(args);
         String output = systemOut().getHistory();
         String referenceOutput = readFile("P4SimpSample_output.txt");
-// assertFuzzyEquals(referenceOutput, output);
+        //assertFuzzyEquals(referenceOutput, output);
     }
 }
