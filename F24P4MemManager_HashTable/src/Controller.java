@@ -10,7 +10,7 @@ public class Controller {
 
     private HashTable hashTable;
     // private memoryPool
-
+    //
     public Controller(int memorySize, int hashTableSize) {
         hashTable = new HashTable(hashTableSize);
     }
@@ -78,7 +78,7 @@ public class Controller {
         String[] arr = hashTable.print();
         
         output.println("Hashtable:");
-        for (i = 0; i < arr.length; i++)
+        for (int i = 0; i < arr.length; i++)
         {
             if (arr[i] == null)
             {
